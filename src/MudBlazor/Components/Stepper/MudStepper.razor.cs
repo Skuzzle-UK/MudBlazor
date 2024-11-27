@@ -457,7 +457,7 @@ public partial class MudStepper : MudComponentBase
             }
         }
 
-        await UpdateStepAsync(_steps[0], new MouseEventArgs(), StepAction.Activate);
+        await UpdateStepAsync(_steps[0], new MouseEventArgs(), StepAction.Reset);
     }
 
     private Task OnStepClickAsync(MudStep step, MouseEventArgs e)
