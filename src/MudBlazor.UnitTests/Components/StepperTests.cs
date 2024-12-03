@@ -561,7 +561,7 @@ namespace MudBlazor.UnitTests.Components
             stepper.FindAll(".mud-card-actions .mud-button").Count.Should().Be(0, "because the action content replaces them");
             stepper.Find(".mud-card-actions").InnerHtml?.Trim().Should().Be("je ne sais pas");
         }
-        
+
         [Test]
         public void ShowReset_ShouldControlResetButtonVisibilty()
         {
@@ -578,9 +578,9 @@ namespace MudBlazor.UnitTests.Components
             stepper.FindAll(".mud-card-actions .mud-button").Count.Should().Be(2); // previous, next
             stepper.FindAll(".mud-card-actions .mud-stepper-button-reset").Count.Should().Be(0);
         }
-        
+
         [Test]
-		public void ResetButton_ShouldResetActiveStep()
+        public void ResetButton_ShouldResetActiveStep()
         {
             var stepper = Context.RenderComponent<MudStepper>(self =>
             {
@@ -613,7 +613,7 @@ namespace MudBlazor.UnitTests.Components
             stepper.Instance.Steps[0].GetState(x => x.Completed).Should().Be(false);
             stepper.Instance.GetState(x => x.ActiveIndex).Should().Be(0);
         }
-        
+
         [Test]
         public void ResetButton_ShouldTriggerResetStepAction()
         {
@@ -637,7 +637,7 @@ namespace MudBlazor.UnitTests.Components
                 self.AddChildContent<MudStep>(step => { });
                 self.AddChildContent<MudStep>(step => { });
             });
-        
+
             // clicking next sends Complete action requests to get us in a state that reset is a valid click
             stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
             stepper.Find(".mud-stepper-button-next").Click();
@@ -648,13 +648,13 @@ namespace MudBlazor.UnitTests.Components
             index.Should().Be(1);
             action.Should().Be(StepAction.Complete);
             stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(2);
-            
+
             // check that clicking reset sends Reset StepAction
             stepper.Find(".mud-stepper-button-reset").Click();
             action.Should().Be(StepAction.Reset);
             stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
         }
-        
+
         [Test]
         public void NextButton_ShouldTriggerCompleteStepAction()
         {
@@ -678,7 +678,7 @@ namespace MudBlazor.UnitTests.Components
                 self.AddChildContent<MudStep>(step => { });
                 self.AddChildContent<MudStep>(step => { });
             });
-            
+
             // clicking next sends Complete action requests
             stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
             stepper.Find(".mud-stepper-button-next").Click();
