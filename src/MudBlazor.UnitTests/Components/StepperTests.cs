@@ -614,6 +614,117 @@ namespace MudBlazor.UnitTests.Components
             stepper.Instance.GetState(x => x.ActiveIndex).Should().Be(0);
         }
 
+        [Test]
+        public void ResetButton_ShouldTriggerResetStepAction()
+        {
+            var cancel = false;
+            var action = StepAction.Reset;
+            var index = -1;
+            Task OnPreviewInteraction(StepperInteractionEventArgs args)
+            {
+                action = args.Action;
+                index = args.StepIndex;
+                // ReSharper disable once AccessToModifiedClosure
+                args.Cancel = cancel;
+                return Task.CompletedTask;
+            }
+            var stepper = Context.RenderComponent<MudStepper>(self =>
+            {
+                self.Add(x => x.OnPreviewInteraction, OnPreviewInteraction);
+                self.Add(x => x.ShowResetButton, true);
+                self.Add(x => x.NonLinear, true);
+                self.AddChildContent<MudStep>(step => { });
+                self.AddChildContent<MudStep>(step => { });
+                self.AddChildContent<MudStep>(step => { });
+            });
+        
+            // clicking next sends Complete action requests to get us in a state that reset is a valid click
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
+            stepper.Find(".mud-stepper-button-next").Click();
+            index.Should().Be(0);
+            action.Should().Be(StepAction.Complete);
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(1);
+            stepper.Find(".mud-stepper-button-next").Click();
+            index.Should().Be(1);
+            action.Should().Be(StepAction.Complete);
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(2);
+        
+            // check that clicking reset sends Reset StepAction
+            stepper.Find(".mud-stepper-button-reset").Click();
+            action.Should().Be(StepAction.Reset);
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
+        }
+
+        [Test]
+        public void NextButton_ShouldTriggerCompleteStepAction()
+        {
+            var cancel = false;
+            var action = StepAction.Reset;
+            var index = -1;
+            Task OnPreviewInteraction(StepperInteractionEventArgs args)
+            {
+                action = args.Action;
+                index = args.StepIndex;
+                // ReSharper disable once AccessToModifiedClosure
+                args.Cancel = cancel;
+                return Task.CompletedTask;
+            }
+            var stepper = Context.RenderComponent<MudStepper>(self =>
+            {
+                self.Add(x => x.OnPreviewInteraction, OnPreviewInteraction);
+                self.Add(x => x.ShowResetButton, true);
+                self.Add(x => x.NonLinear, true);
+                self.AddChildContent<MudStep>(step => { });
+                self.AddChildContent<MudStep>(step => { });
+                self.AddChildContent<MudStep>(step => { });
+            });
+        
+            // clicking next sends Complete action requests
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
+            stepper.Find(".mud-stepper-button-next").Click();
+            index.Should().Be(0);
+            action.Should().Be(StepAction.Complete);
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(1);
+        }
+        
+        [Test]
+        public void BackButton_ShouldTriggerActivateStepAction()
+        {
+            var cancel = false;
+            var action = StepAction.Reset;
+            var index = -1;
+            Task OnPreviewInteraction(StepperInteractionEventArgs args)
+            {
+                action = args.Action;
+                index = args.StepIndex;
+                // ReSharper disable once AccessToModifiedClosure
+                args.Cancel = cancel;
+                return Task.CompletedTask;
+            }
+            var stepper = Context.RenderComponent<MudStepper>(self =>
+            {
+                self.Add(x => x.OnPreviewInteraction, OnPreviewInteraction);
+                self.Add(x => x.ShowResetButton, true);
+                self.Add(x => x.NonLinear, true);
+                self.AddChildContent<MudStep>(step => { });
+                self.AddChildContent<MudStep>(step => { });
+                self.AddChildContent<MudStep>(step => { });
+            });
+        
+            // clicking next sends Complete action requests to get us in a state that back is a valid click
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
+            stepper.Find(".mud-stepper-button-next").Click();
+            index.Should().Be(0);
+            action.Should().Be(StepAction.Complete);
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(1);
+        
+            // check that clicking reset sends Reset StepAction
+            stepper.Find(".mud-stepper-button-previous").Click();
+            index.Should().Be(0);
+            action.Should().Be(StepAction.Activate);
+            stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
+        }
+
 
         [Test]
         public void Stepper_ControlledNavigationTest()
@@ -674,6 +785,7 @@ namespace MudBlazor.UnitTests.Components
             // cancel jumping via header click
             cancel = false;
             stepper.Find(".mud-stepper-button-reset").Click();
+            action.Should().Be(StepAction.Reset);
             stepper.Instance.GetState<int>(nameof(MudStepper.ActiveIndex)).Should().Be(0);
             cancel = true; // this should cancel the activation of step 3
             stepper.FindAll(".mud-step")[2].Click(); // try to go to step3
